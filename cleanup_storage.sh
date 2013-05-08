@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+modprobe raid456; modprobe raid1; modprobe raid0
+
 mdadm -S /dev/md/myRAID
 
 parted /dev/vdb mklabel msdos -s
