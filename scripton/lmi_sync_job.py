@@ -12,7 +12,7 @@ class LMISyncJob:
 
     # Define value for running job
     JOB_RUNNING = 4096
-    
+
     # Define error codes
     SUCCESS = 0
     ERR_UNSPECIFIED = 2
@@ -64,7 +64,7 @@ class LMISyncJob:
                    self.err)
         elif self.ret != LMISyncJob.JOB_RUNNING:
             # Job never started up correctly. Return the
-            # original result code, error message and outparams  
+            # original result code, error message and outparams
             return (LMISyncJob.ERR_UNSPECIFIED,
                     None,
                     self.err)
@@ -81,7 +81,7 @@ class LMISyncJob:
             return (self.job.ERR_UNSPECIFIED,
                     self.job.JobOutParameters,
                     self.job.JobStatus)
-        
+
         return (LMISyncJob.SUCCESS,
                 self.job.JobOutParameters,
                 self.job.JobStatus)

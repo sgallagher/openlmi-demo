@@ -56,7 +56,7 @@ for drive in avail_drives:
     if ret != LMISyncJob.SUCCESS:
         print "Error creating partition table: {0}({1})".format(err, ret)
         sys.exit(1)
-    
+
     # Create a single partition covering the whole disk
     print "Creating partition on {0}".format(physical_device.DeviceID)
     job = LMISyncJob(ns,
@@ -112,5 +112,5 @@ if (ret != LMISyncJob.SUCCESS):
     # Job did not complete successfully
     print "Error creating filesystem: {0}({1})".format(err, ret)
     sys.exit(2)
-    
+
 print "Filesystem created on {0}".format(raid.Name)
