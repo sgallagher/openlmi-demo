@@ -10,11 +10,17 @@ import sys
 import time
 from scripton.lmi_sync_job import LMISyncJob
 
+# Machine to contact
+server = "openlmi-demo.example.com"
+username = "root"
+password = "redhat"
+
 # Drives to work with
 avail_drives = ["/dev/vdb", "/dev/vdc", "/dev/vdd"]
 
 # Connect to the example VM
-c = connect("openlmi-demo", "root", "redhat")
+print "Connecting to remote server \"{0}\"".format(server)
+c = connect(server, username, password)
 
 # Shorthand the cimv2 namespace
 ns = c.root.cimv2
