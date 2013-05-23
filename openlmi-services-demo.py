@@ -7,6 +7,7 @@ Created on Apr 8, 2013
 '''
 
 import sys
+import time
 
 # Machine to contact
 server = "openlmi-demo.example.com"
@@ -28,12 +29,20 @@ for service in ns.LMI_Service.instances():
               + ("1" if service.Started else "0") \
               + " (" + service.Status + ")"
 
+time.sleep(3)
+
 print "== Restarting auditd via OpenLMI =="
 auditd = ns.LMI_Service.first_instance(key="Name", value="auditd")
 print "auditd status: ({0})".format(auditd.Status)
+time.sleep(3)
+
 print "Stopping auditd..."
 auditd.StopService()
+time.sleep(3)
+
 print "auditd status: ({0})".format(auditd.Status)
 print "Starting auditd..."
 auditd.StartService()
+time.sleep(3)
+
 print "auditd status: ({0})".format(auditd.Status)
