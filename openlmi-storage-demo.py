@@ -52,6 +52,8 @@ print "\n== Initial configuration of {0} ==".format(server)
 storage_view = LMIStorageView(ns)
 storage_view.print_all()
 
+print "\n== Creating RAID set on unused drives ==".format(server)
+
 # Prep the first three drives
 for drive in avail_drives:
     print "Processing drive {0}".format(drive)
