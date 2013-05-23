@@ -1,4 +1,4 @@
-#!/usr/bin/env lmishell
+# !/usr/bin/env lmishell
 
 '''
 Created on Apr 8, 2013
@@ -9,6 +9,7 @@ Created on Apr 8, 2013
 import sys
 import time
 from scripton.lmi_sync_job import LMISyncJob
+from scripton.lmi_storage_view import LMIStorageView
 
 # Machine to contact
 server = "openlmi-demo.example.com"
@@ -44,6 +45,12 @@ filesystem_service = ns.LMI_FileSystemConfigurationService.first_instance(
 gpt_caps = ns.LMI_DiskPartitionConfigurationCapabilities.first_instance(
                Key="InstanceID",
                Value="LMI:LMI_DiskPartitionConfigurationCapabilities:GPT")
+
+
+# Display the current configuration of the system
+print "\n== Initial configuration of {0} ==".format(server)
+storage_view = LMIStorageView(ns)
+storage_view.print_all()
 
 # Prep the first three drives
 for drive in avail_drives:
@@ -92,8 +99,8 @@ print "Creating raid set on {0}, {1}, {2}".format(vdb1.Name, vdc1.Name,
 
 job = LMISyncJob(ns,
                  storage_service.CreateOrModifyMDRAID(
-                     ElementName = "myRAID",
-                     InExtents = [vdb1.path, vdc1.path, vdd1.path],
+                     ElementName="myRAID",
+                     InExtents=[vdb1.path, vdc1.path, vdd1.path],
                      Level=5))
 (ret, outparams, err) = job.process()
 
@@ -111,8 +118,8 @@ print "Created RAID device {0} at level {1} of size {2} MB".format(
 print "Creating EXT4 file system"
 job = LMISyncJob(ns,
                  filesystem_service.LMI_CreateFileSystem(
-                     FileSystemType = 32769, # 32769 = EXT4
-                     InExtents= [raid.path]))
+                     FileSystemType=32769,  # 32769 = EXT4
+                     InExtents=[raid.path]))
 (ret, outparams, err) = job.process()
 if (ret != LMISyncJob.SUCCESS):
     # Job did not complete successfully
@@ -120,3 +127,8 @@ if (ret != LMISyncJob.SUCCESS):
     sys.exit(2)
 
 print "Filesystem created on {0}".format(raid.Name)
+
+# Display the final configuration of the system
+print "\n== Final configuration of {0} ==".format(server)
+storage_view = LMIStorageView(ns)
+storage_view.print_all()
