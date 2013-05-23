@@ -21,13 +21,22 @@ class LMIStorageView:
         if level > 1:
             sys.stdout.write(u"\u21b3")
         # Print the name of the current extent
-        sys.stdout.write(u"{0}\n".format(extent.Name))
+        sys.stdout.write(u"{0}".format(extent.Name))
+
+        # Does this extent have a filesystem on it?
+        filesystems = extent.associators(AssocClass="LMI_ResidesOnExtent",
+                                       ResultClass="LMI_LocalFileSystem")
+        for fs in filesystems:
+            sys.stdout.write(": {0}".format(fs.FileSystemType))
+        sys.stdout.write("\n")
 
         # Find all child extents
         dependent = extent.associators(AssocClass="CIM_BasedOn",
                                        ResultRole="Dependent")
         for dep in dependent:
             self._recursive_display(level + 1, dep)
+
+
 
     def print_all(self):
         '''
