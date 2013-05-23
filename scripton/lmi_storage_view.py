@@ -28,6 +28,13 @@ class LMIStorageView:
                                        ResultClass="LMI_LocalFileSystem")
         for fs in filesystems:
             sys.stdout.write(": {0}".format(fs.FileSystemType))
+
+        # Is this extent a SWAP partition?
+        swaps = extent.associators(AssocClass="LMI_ResidesOnExtent",
+                                   ResultClass="LMI_DataFormat")
+        for swap in swaps:
+            sys.stdout.write(": {0}".format(swap.FormatTypeDescription))
+
         sys.stdout.write("\n")
 
         # Find all child extents
