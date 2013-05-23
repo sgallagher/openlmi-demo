@@ -5,6 +5,7 @@ Created on May 23, 2013
 '''
 
 import sys
+import demoutils.democolor as democolor
 
 class LMIStorageView:
     '''
@@ -27,13 +28,16 @@ class LMIStorageView:
         filesystems = extent.associators(AssocClass="LMI_ResidesOnExtent",
                                        ResultClass="LMI_LocalFileSystem")
         for fs in filesystems:
-            sys.stdout.write(": {0}".format(fs.FileSystemType))
+            sys.stdout.write(u": {0}".format(
+                democolor.hilite(fs.FileSystemType, democolor.XTERM_CYAN)))
 
         # Is this extent a SWAP partition?
         swaps = extent.associators(AssocClass="LMI_ResidesOnExtent",
                                    ResultClass="LMI_DataFormat")
         for swap in swaps:
-            sys.stdout.write(": {0}".format(swap.FormatTypeDescription))
+            sys.stdout.write(u": {0}".format(
+                democolor.hilite(swap.FormatTypeDescription,
+                                 democolor.XTERM_YELLOW)))
 
         sys.stdout.write("\n")
 

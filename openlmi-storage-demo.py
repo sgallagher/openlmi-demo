@@ -10,6 +10,7 @@ import sys
 import time
 from scripton.lmi_sync_job import LMISyncJob
 from scripton.lmi_storage_view import LMIStorageView
+import demoutils.democolor as democolor
 
 # Machine to contact
 server = "openlmi-demo.example.com"
@@ -20,7 +21,8 @@ password = "redhat"
 avail_drives = ["/dev/vdb", "/dev/vdc", "/dev/vdd"]
 
 # Connect to the example VM
-print "Connecting to remote server \"{0}\"".format(server)
+print democolor.hilite("\nConnecting to remote server \"{0}\"".format(server),
+                       democolor.XTERM_WHITE)
 c = connect(server, username, password)
 
 # Shorthand the cimv2 namespace
@@ -48,11 +50,13 @@ gpt_caps = ns.LMI_DiskPartitionConfigurationCapabilities.first_instance(
 
 
 # Display the current configuration of the system
-print "\n== Initial configuration of {0} ==".format(server)
+print democolor.hilite("\n== Initial configuration of {0} ==".format(server),
+                       democolor.XTERM_MAGENTA, True)
 storage_view = LMIStorageView(ns)
 storage_view.print_all()
 
-print "\n== Creating RAID set on unused drives ==".format(server)
+print democolor.hilite("\n== Creating RAID set on unused drives ==".format(server),
+                       democolor.XTERM_MAGENTA, True)
 
 # Prep the first three drives
 for drive in avail_drives:
@@ -83,6 +87,7 @@ for drive in avail_drives:
         print "Error creating partition on {0}: {1}({2})".format(
                drive, err, ret)
         sys.exit(2)
+    sys.stdout.write(u"\n")
 
 # Find the devices we want to add to MD RAID
 # (filtering one CIM_StorageExtent.instances()
@@ -112,9 +117,11 @@ if ret != LMISyncJob.SUCCESS:
     sys.exit(2)
 
 raid = ns.LMI_StorageExtent.first_instance(Key="Name", Value="/dev/md/myRAID")
-print "Created RAID device {0} at level {1} of size {2} MB".format(
-       raid.DeviceID, raid.Level,
-       raid.BlockSize * raid.NumberOfBlocks / 1024 / 1024)
+print democolor.hilite(
+    "Created RAID device {0} at level {1} of size {2} MB".format(
+        raid.DeviceID, raid.Level,
+        raid.BlockSize * raid.NumberOfBlocks / 1024 / 1024),
+    democolor.XTERM_WHITE)
 
 
 print "Creating EXT4 file system"
@@ -131,6 +138,7 @@ if (ret != LMISyncJob.SUCCESS):
 print "Filesystem created on {0}".format(raid.Name)
 
 # Display the final configuration of the system
-print "\n== Final configuration of {0} ==".format(server)
+print democolor.hilite("\n== Final configuration of {0} ==".format(server),
+                       democolor.XTERM_MAGENTA, True)
 storage_view = LMIStorageView(ns)
 storage_view.print_all()
