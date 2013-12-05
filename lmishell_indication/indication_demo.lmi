@@ -49,6 +49,11 @@ sys.stdout.write("Starting up indication listener\n")
 
 # First, start up an indication listener
 listener = LMIIndicationListener("0.0.0.0", listening_port)
+
+# We pass an indication name with XXXXXXXX in it, which will be internally
+# replaced with a unique identifier, to ensure that this name doesn't
+# conflict with any other client to the system (and so multiple copies of
+# this demo can be run safely at the same time.
 uniquename = listener.add_handler("useradd-XXXXXXXX", useradd_notifier)
 
 sys.stdout.write("useradd handler created, starting listener for %s\n" % uniquename)
