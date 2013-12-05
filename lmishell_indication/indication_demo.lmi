@@ -1,3 +1,7 @@
+# Sample script to emit a notification when a new user is added
+# to a managed system. Requires OpenLMI and the Account Provider
+# on the managed system. See Account Provider API documentation
+# for additional Indicators.
 import sys
 import time
 import pynotify
@@ -156,7 +160,7 @@ def main():
 
     sys.stdout.write('indication registered\n')
 
-    # Loop forever. The listener is running in another thread.
+    # Keep Alive Loop; not polling. The listener is running in another thread.
     while True:
         time.sleep(90)
         pass
