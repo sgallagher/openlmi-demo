@@ -24,7 +24,7 @@ def useradd_notifier(indication, **kwargs):
         sys.exit(5)
 
 def establish_connection():
-    '''username,
+    '''
     Prompt for the hostname to contact and the username and password, if
     necessary.
     '''
