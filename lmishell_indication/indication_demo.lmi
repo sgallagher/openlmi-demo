@@ -58,6 +58,11 @@ uniquename = listener.add_handler("useradd-XXXXXXXX", useradd_notifier)
 
 sys.stdout.write("useradd handler created, starting listener for %s\n" % uniquename)
 
+
+# Start listening for the user-add indications.
+# This method will start a new thread and an HTTP listener in that thread.
+# It will be terminated automatically when the application exits, but we
+# could shut it down sooner with listener.stop() as well.
 res = listener.start()
 if not res:
     sys.stdout.write("I'm a poor listener\n")
@@ -88,7 +93,11 @@ if not retval or not retval.rval:
 
 sys.stdout.write('indication registered\n')
 
-# Loop forever. The listener is running in another thread
+# Loop forever. The listener is running in another thread.
 while True:
     time.sleep(90)
     pass
+
+# When the is interrupted (such as by SIGTERM aka ctrl-c), the process will
+# return control to the lmishell, which will automatically unsubscribe all
+# indications associated with this script.
