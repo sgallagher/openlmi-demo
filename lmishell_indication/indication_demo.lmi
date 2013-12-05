@@ -91,19 +91,31 @@ def subscribe_adduser(c, uniquename, listener_uri):
 
     # Subscribe to the account creation indication
     retval = c.subscribe_indication(
+        # The unique name of this indication, to differentiate it from other
+        # clients of the managed system.
+        Name=uniquename,
+
+        # A CQL query that will return the indication object for which we
+        # want to register.
+        # TODO: link to CQL reference
+        Query='SELECT * FROM LMI_AccountInstanceCreationIndication WHERE SOURCEINSTANCE ISA LMI_Account',
+
+        # This is the destination computer, where all the indications will be
+        # delivered
+        Destination=listener_uri,
+
+        # The following attributes are standardized and should not be changed.
+        # As of today, the upstream master repository makes these attributes
+        # optional, but as of the time of this writing, it is not part of the
+        # any released version, so we need to include them.
         FilterCreationClassName="CIM_IndicationFilter",
         FilterSystemCreationClassName="CIM_ComputerSystem",
         FilterSourceNamespace="root/cimv2",
         QueryLanguage="DMTF:CQL",
-        Query='SELECT * FROM LMI_AccountInstanceCreationIndication WHERE SOURCEINSTANCE ISA LMI_Account',
-        Name=uniquename,
         CreationNamespace="root/interop",
         SubscriptionCreationClassName="CIM_IndicationSubscription",
         HandlerCreationClassName="CIM_IndicationHandlerCIMXML",
-        HandlerSystemCreationClassName="CIM_ComputerSystem",
-        # this is the destination computer, where all the indications will be
-        # delivered
-        Destination=listener_uri
+        HandlerSystemCreationClassName="CIM_ComputerSystem"
     )
 
     if not retval or not retval.rval:
