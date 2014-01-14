@@ -27,14 +27,16 @@ def useradd_notifier(indication, **kwargs):
         sys.stderr.write("Failed to send notification")
         sys.exit(5)
 
-def establish_connection():
+def establish_connection(hostname):
     '''
     Prompt for the hostname to contact and the username and password, if
     necessary.
     '''
 
-    # Prompt for the hostname
-    hostname = raw_input('Hostname: ')
+    if not hostname:
+        # Prompt for the hostname
+        hostname = raw_input('Hostname: ')
+
     host_uri = "https://%s" % hostname
 
     # Run this script as root and this will use the
@@ -127,7 +129,7 @@ def subscribe_adduser(c, uniquename, listener_uri):
         sys.exit(2)
 
 
-def main():
+def main(argv):
     '''
     This script creates a new indication listener and registers it with the
     OpenLMI CIMOM. It will print a message both on the terminal and via
@@ -146,7 +148,11 @@ def main():
         sys.exit(4)
 
     # Connect to the remote (or local) OpenLMI managed system
-    c = establish_connection()
+    hostname = None
+    if len(argv) > 1:
+        hostname = argv[1]
+
+    c = establish_connection(hostname)
 
     sys.stdout.write("Starting up indication listener\n")
 
@@ -169,4 +175,4 @@ def main():
     # return control to the lmishell, which will automatically unsubscribe all
     # indications associated with this script.
 
-main()
+main(sys.argv)
