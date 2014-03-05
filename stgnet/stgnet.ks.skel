@@ -1,0 +1,94 @@
+#version=RHEL7
+# System authorization information
+auth --enableshadow --passalgo=sha512
+
+# Use network installation
+url --url="@@COMPOSEURL@@"
+# Run the Setup Agent on first boot
+firstboot --enable
+ignoredisk --only-use=vda
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts='us'
+# System language
+lang en_US.UTF-8
+
+repo --name=epel --mirrorlist="http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=x86_64"
+
+# Network information
+network  --bootproto=dhcp --device=eth0 --onboot=on --ipv6=auto --noipv6 --activate
+network  --hostname=openlmi-stgnet-demo.example.com
+# Root password "redhat"
+rootpw --iscrypted $6$MHCxkfHbUNkJRH4f$7x15TV7Euc0NtIb5G/LkmCH.CIh.xEJJxUPWmaTe9.ngvHSMpkFmek1A.9fQ7E0TU2aFoak.JXgR9lhhPR5b//
+# System timezone
+timezone America/New_York --isUtc
+# System bootloader configuration
+bootloader --location=mbr --boot-drive=vda --timeout=2
+# Partition clearing information
+clearpart --all --drives=vda --initlabel
+# Disk partitioning information
+part swap --fstype="swap" --ondisk=vda --size=1000
+part /boot --fstype="ext3" --ondisk=vda --size=300
+part / --fstype="ext4" --ondisk=vda --grow
+
+firewall --service=wbem-https
+services --enabled=tog-pegasus
+user --name=pegasus
+
+%packages
+@core
+mc
+tmux
+tog-pegasus
+openlmi-storage
+openlmi-networking
+%end
+
+%post
+# set the pegasus password to "redhat"
+echo "redhat" | passwd --stdin pegasus
+
+# setup repositories
+cat >/etc/yum.repos.d/rhel.repo <<EOF
+[rhel]
+name=rhel
+baseurl=@@COMPOSEURL@@
+gpgcheck=0
+enabled = 1
+EOF
+cat >/etc/yum.repos.d/epel.repo <<EOF
+[epel]
+name=EPEL7
+mirrorlist=http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=x86_64
+failovermethod=priority
+enabled=1
+gpgcheck=0
+EOF
+
+# reconfigure Pegasus certificate with updated hostname
+hostname @@TESTHOSTNAME@@
+echo @@TESTHOSTNAME@@ >/etc/hostname
+cat >/etc/sysconfig/network <<EOF
+HOSTNAME=@@TESTHOSTNAME@@
+NETWORKING=yes
+EOF
+sed -i 's,\(127\.0\.0\.1\|::1\)\s\+.*,\0 @@TESTHOSTNAME@@,' \
+    /etc/hosts
+service NetworkManager restart
+# Regenerate certificate with our hostname. Inspired by
+# /usr/share/Pegasus/scripts/genOpenPegasusSSLCerts script.
+pushd /etc/Pegasus
+sed -i 's,\(^CN\s*=\s*\).*,\1@@TESTHOSTNAME@@,' ssl.cnf \
+    2>>/var/lib/Pegasus/log/install.log
+/usr/bin/openssl req -x509 -days 3650 -newkey rsa:2048 \
+         -nodes -config ssl.cnf \
+         -keyout file.pem \
+         -out server.pem 2>>/var/lib/Pegasus/log/install.log
+chmod 400 file.pem
+chmod 444 server.pem
+popd #/etc/Pegasus
+%end
+
+# this does not work - installation hangs with cpu usage at 100%
+#shutdown
+# this way installation stops and waits for user input (ENTER)
+# after that it hangs again, but it works fain after reboot
