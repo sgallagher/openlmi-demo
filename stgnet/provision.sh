@@ -111,7 +111,9 @@ virt-install --connect "$QEMU" \
     --ram=1024 \
     --disk=${SYSTEMDISK} $test_disk_opts \
     --vcpus=2 \
-    --network=network:${MAINNETWORK} --network=network:${TESTNETWORK} \
+    --network=network:${MAINNETWORK} \
+    --network=network:${TESTNETWORK} \
+    --network=network:${TESTNETWORK} \
     --location=${LOCATION} \
     --os-type=linux \
     --os-variant=rhel7 \
