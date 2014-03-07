@@ -75,12 +75,26 @@ Useful environment variables:
                     created by makefile from stgnet.ks.skel template.
 
 Running demos:
+
+    STORAGE
+    =======
+
     Just run:
-	./storage-demo.sh
+	$ ./storage-demo.sh
 
     Above will execute part of demo with LMI Meta-command. And part in
     LMIShell. With -m option, it will do all the work with LMI Meta-command.
     
     To return storage setup to original state, run:
-	./storage-clean.sh
+	$ ./storage-clean.sh
     This is neccessary if you want to run ./storage-demo.sh again.
+
+    NETWORKING
+    ==========
+
+    Run:
+        ./networking-demo.sh
+
+    To return networking setup to original state, run:
+        $ ./networking-clean.sh
+    This is neccessary if you want to run ./networking-demo.sh again.
