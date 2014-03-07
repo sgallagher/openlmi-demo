@@ -16,6 +16,8 @@ if [[ "$1" =~ ^(-m|--meta-command)$ ]]; then
 fi
 . base.sh
 
+set -x      # echo commands
+
 # Following devices are available on remote host
 # /dev/vda     MS-DOS partition table
 # ├─/dev/vda1  ext3
@@ -26,6 +28,9 @@ fi
 # /dev/vdd     Unknown
 # /dev/vde     Unknown
 
+# *****************************************************************************
+title "Inspecting storage."
+# *****************************************************************************
 # Let's check out, what informations can we get about /dev/vda
 lmi -h $URI storage show vda
 
@@ -62,7 +67,10 @@ lmi -H -h $URI storage tree
 { set +x; } 2>/dev/null	    # suppress echo for next condition
 if [[ ${USE_LMISHELL:-1} = 1 ]];
 then    # Let's switch to LMIShell.
-    set -x                  # reenable echo
+
+    # *************************************************************************
+    title "Configuring RAID and LVM with LMIShell."
+    # *************************************************************************
 
     # This scripts will:
     #  * create RAID 5 named "microraid" on vdb, vdc and vdd
@@ -72,7 +80,10 @@ then    # Let's switch to LMIShell.
     lmishell stg_make_lmivol.lmi $URI
 
 else    # The same can be achieved with LMI Meta-command.
-    set -x                  # reenable echo
+
+    # *************************************************************************
+    title "Configuring RAID and LVM."
+    # *************************************************************************
 
     # We have four unpartitioned disks we can freely use. Let's create RAID 5
     # called "microraid" on three of them:
@@ -84,10 +95,16 @@ else    # The same can be achieved with LMI Meta-command.
     # Let's get more details about the raid:
     lmi -H -h $URI storage show microraid
 
+    # *************************************************************************
+    title "Creating volume group \"lmivg\"."
+    # *************************************************************************
     # And make it into LVM physical volume together with the last physical
     # device. Let's name it "lmivg".
     lmi -h $URI storage vg create lmivg microraid vde
 
+    # *************************************************************************
+    title "Creating logical volume \"lmivol\"."
+    # *************************************************************************
     # Empty volume group is not much useful:
     lmi -h $URI storage lv create lmivg lmivol 1G
     # This creates logical volumne "lmivol" in "lmivg" volume group !G large.
@@ -109,6 +126,9 @@ else    # The same can be achieved with LMI Meta-command.
     lmi -H -h $URI storage vg show lmivg
     lmi -H -h $URI storage lv show lmivol
 
+    # *************************************************************************
+    title "Formatting volume \"lmivol\" as xfs."
+    # *************************************************************************
     # Still it's not usable without a proper file system:
     lmi -H -h $URI storage fs create --label lmixfs xfs lmivol
     # This will format our "lmivol" volume with xfs. That's just one out of
@@ -123,14 +143,17 @@ else    # The same can be achieved with LMI Meta-command.
 
 fi
 
+# *****************************************************************************
+title "Mounting filesystem \"lmivol\"."
+# *****************************************************************************
 # Finally let's mount it. There are two steps involed. First is making the
 # mount point (with a check for existence)
 { set +x; } 2>/dev/null	    # suppress echo
 if ! lmi -h $URI file show /mnt/lmivol 2>/dev/null; then
-    set -x		    # reenable echo
+    { set -x; } 2>/dev/null     # reenable echo
     lmi -h $URI file createdir /mnt/lmivol
 fi
-set -x                      # reenable echo
+{ set -x; } 2>/dev/null     # reenable echo
 
 # Second is the mount command:
 lmi -h $URI storage mount create /dev/mapper/lmivg-lmivol /mnt/lmivol

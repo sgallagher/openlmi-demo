@@ -19,7 +19,23 @@ fi
 
 PS4=$(printf '\\n%s+ $ %s' `tput setaf 6` `tput sgr0`)
 
+function title() {
+    # Print colorized title.
+    # By default it turns on commands echo. If you want to prevent it,
+    # prepend your message with +x argument.
+    {
+        set +x;
+        if [[ "$1" == "+x" ]]; then
+            shift;
+            setx=0;
+        fi
+        printf "\n%s== %s ==%s\n" `tput setaf 6` "$1" `tput sgr0`;
+        if [[ "${setx:-1}" == 1 ]]; then
+            unset setx
+            set -x;
+        fi
+    } 2>/dev/null
+}
+
 # Terminate if something fails.
 set -e
-# Echo commands run.
-set -x

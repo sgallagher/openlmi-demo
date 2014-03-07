@@ -6,6 +6,8 @@
 # Do not exit upon first error.
 set +e
 
+title +x "Cleaning up after storage demo"
+
 lmi -h $URI <<-EOF
 	storage mount delete /mnt/lmivol
 	file deletedir /mnt/lmivol
