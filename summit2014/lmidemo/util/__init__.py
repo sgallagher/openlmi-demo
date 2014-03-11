@@ -25,6 +25,7 @@ def establish_connection(options):
     # to match the system you are connecting to
 
     if getuid() == 0 and hostname == 'localhost':
+        print(democolor.hilite("lmi.shell.LMIConnection.connect(%s)" % hostname))
         c = connect(hostname)
     else:
         # Prompt for user and password
@@ -38,6 +39,9 @@ def establish_connection(options):
         else:
             passwd = options.password
 
+        print(democolor.hilite("lmi.shell.LMIConnection.connect(%s, %s, %s)" % (
+                                   host_uri, user, passwd),
+                               democolor.XTERM_MAGENTA))
         c = connect(host_uri, user, passwd,
                     verify_server_cert=options.verify)
 
