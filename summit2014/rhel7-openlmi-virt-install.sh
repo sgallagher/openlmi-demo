@@ -1,3 +1,5 @@
+#!/bin/bash
+
 virt-install \
     -n rhel7-openlmi \
     -r 1024 \
