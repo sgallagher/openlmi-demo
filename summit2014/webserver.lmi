@@ -25,11 +25,17 @@ def add_args(parser):
                         default='httpd')
     return parser
 
+def keypress(text):
+    # Add pause for demo operator. Press enter to continue.
+    raw_input(text)
+
 def main(argv):
     '''
     This script will install the 'httpd' package, configure
     it to start at boot and run the service immediately.
     '''
+
+    print democolor.hilite(main.__doc__, democolor.XTERM_BOLD)
 
     parser = init_parser('Install a service on the target '
                          'system, enable it to start by default, '
@@ -45,10 +51,12 @@ def main(argv):
     c = establish_connection(options)
     ns = c.root.cimv2
 
-    print democolor.hilite("Communication established.",
-                           democolor.XTERM_YELLOW)
-    print democolor.hilite("Install %s package onto the system" % options.package,
-                           democolor.XTERM_YELLOW)
+    keypress(democolor.hilite("Communication established.",
+                              democolor.XTERM_WHITE))
+
+    # Use keypress to pause for demo operator to finish talking.
+    keypress(democolor.hilite("Install %s package onto the system using the OpenLMI Software Provider" % options.package,
+                              democolor.XTERM_YELLOW))
 
     # Install the 'httpd' package
     packages = sw.find_package(ns, name=options.package)
@@ -57,16 +65,20 @@ def main(argv):
         exit(5)
     package = packages.next()
 
-    res = sw.install_package(ns, package)
-    if not res:
-        stderr.write(democolor.hilite("Could not install package\n",
+    try:
+        res = sw.install_package(ns, package)
+        if not res:
+            stderr.write(democolor.hilite("Could not install package\n",
+                                          democolor.XTERM_RED))
+            exit(2)
+        keypress(democolor.hilite("Installed %s package." % options.package,
+                                  democolor.XTERM_WHITE))
+    except Exception as detail:
+        stderr.write(democolor.hilite("Could not install package\n%s\n" % detail,
                                       democolor.XTERM_RED))
-        exit(2)
 
-    print democolor.hilite("Installed %s package." % options.package,
-                           democolor.XTERM_YELLOW)
-    print democolor.hilite("Configure the %s service to autostart" % options.service,
-                           democolor.XTERM_YELLOW)
+    keypress(democolor.hilite("Configure the %s service to autostart using the OpenLMI Services Provider" % options.service,
+                              democolor.XTERM_YELLOW))
 
     # Enable the service to start at boot
     try:
@@ -76,10 +88,11 @@ def main(argv):
                                       democolor.XTERM_RED))
         exit(3)
 
-    print democolor.hilite("Configured the %s service to auto-start." % options.service,
-                           democolor.XTERM_YELLOW)
-    print democolor.hilite("Start the %s service immediately." % options.service,
-                           democolor.XTERM_YELLOW)
+    keypress(democolor.hilite("%s will now start automatically at boot." % options.service,
+                              democolor.XTERM_WHITE))
+
+    keypress(democolor.hilite("Start the %s service immediately using the OpenLMI Services Provider." % options.service,
+                              democolor.XTERM_YELLOW))
 
     # Start the webserver service
     try:
@@ -89,7 +102,7 @@ def main(argv):
                                       democolor.XTERM_RED))
         exit(4)
 
-        print democolor.hilite("The %s service started successfully." % options.service,
-                           democolor.XTERM_YELLOW)
+    print democolor.hilite("The %s service started successfully." % options.service,
+                       democolor.XTERM_WHITE)
 
 main(argv)
