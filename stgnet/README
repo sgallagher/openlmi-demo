@@ -1,0 +1,100 @@
+Examples of managing storage and networking on remote host with OpenLMI.
+
+Dependencies:
+    For provisioning:
+	libvirt-client, libvirt-daemon, virt-install
+
+    For demos:
+	openlmi-tools
+	openlmi-scripts
+
+Setup:
+    1) Check variables in Makefile and modify/export them as you wish.
+       In particular $COMPOSEURL shall be checked and set to some near mirror
+       with latest RHEL7 compose.
+
+    2) download RHEL7 bootable iso
+
+    3) Run:
+         $ LOCATION=/path/to/rhel7.iso make provivision
+    
+    4) Wait until screen asks you for input. Press enter. Then the guest
+       will probably hang and consume 100% of CPU (due to some bug). You will
+       need to forcefully kill it:
+         $ virsh destroy openlmi-stgnet-demo
+
+    5) The console shall not be interrupted. It will restart the guest which
+       should successfully boot up.
+      
+    6) Login to it with:
+        * username: root
+        * password: redhat
+
+    7) (Guest) Check the IP address:
+         $ ip addr show
+
+    8) (Host) Add the IPv4 address to your /etc/hosts:
+
+        $ echo "192.168.100.238  openlmi-stgnet-demo openlmi-stgnet-demo.example.com" \
+            >> /etc/hosts
+
+       Change the line correspondingly - put there correct IPv4 address from step 7 and
+       tune the hostname if your $TESTHOSTNAME in your Makefile differs. 
+
+    9) (Host) Copy pegasus certificate from guest and update your trust store:
+
+        $ scp openlmi-stgnet-demo:/etc/Pegasus/server.pem \
+                /etc/pki/ca-trust/source/anchors/pegasus-stgnet-demo.pem
+        $ update-ca-trust
+
+Useful environment variables:
+    You can either export them in your shell before executing `make <rule>` or
+    set them in local.cfg script which is a shell script.
+
+    LOCATION   -   Path to bootable iso image of RHEL7 (ideally). Or a path to
+                   local distribution tree installation source.
+    SYSTEMDISK -   Set the path to local qemu image that shall be used as a
+                   system disk if you have one prepared. Or let the
+                   provisioning script create one.
+    TESTDISKS  -   Set the template for storage testing disks locally
+                   available. Change this only if you have prepared 4 qemu
+                   images (or devices) 1GB sized and named the same
+                   (differentiating only in index). For example:
+                      /var/tmp/storage_test1
+                      /var/tmp/storage_test2
+                      /var/tmp/storage_test3
+                      /var/tmp/storage_test4
+                   In such case, set this variable to "/var/tmp/storage_test%d"
+    MAINNETWORK   - Name of virtual network used to interface with guest.
+                    Defaults to virbr0.
+    TESTNETWORKIP - IPv4 address used for testing interfaces in guest. Prefix
+                    needs to be different from prefix of MAINNETWORK. Mask \24
+                    is assumed. It defaults to 192.168.122.1. Therefor IP range
+                    192.168.122.* will be used for testing interfaces.
+    KICKSTART     - Your custom kickstart file. Defaults to stgnet.ks which is
+                    created by makefile from stgnet.ks.skel template.
+
+Running demos:
+
+    STORAGE
+    =======
+
+    Just run:
+	$ ./storage-demo.sh
+
+    Above will execute part of demo with LMI Meta-command. And part in
+    LMIShell. With -m option, it will do all the work with LMI Meta-command.
+    
+    To return storage setup to original state, run:
+	$ ./storage-clean.sh
+    This is neccessary if you want to run ./storage-demo.sh again.
+
+    NETWORKING
+    ==========
+
+    Run:
+        ./networking-demo.sh
+
+    To return networking setup to original state, run:
+        $ ./networking-clean.sh
+    This is neccessary if you want to run ./networking-demo.sh again.

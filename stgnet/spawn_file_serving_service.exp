@@ -1,0 +1,70 @@
+#!/usr/bin/expect -f
+# Spawn simple http server through ssh.
+# Server listens on 8080 port and serves serves files relative to
+# particular path.
+#
+# Args:
+#   USER - Logging username.
+#   PASS - User's password.
+#   HOST - Hostname to connect to.
+#   PWD  - Working path of server. GET requests then contain path
+#          relative to this directory.
+#
+# Usage:
+#   After running this script, execute:
+#     $ curl -G $HOST:8080/path/to/file/relative/to/PWD
+#   It will either list directory if it is a directory or
+#   print a contents of a file.
+
+set timeout 10
+
+set user [lindex $argv 0]
+set pass [lindex $argv 1]
+set host [lindex $argv 2]
+set pwd  [lindex $argv 3]
+
+spawn ssh $user@$host
+
+trap { 
+    send ""
+    close
+    exit
+} { SIGTERM SIGINT }
+
+proc expect_prompt {} {
+    expect -re ".*\[>#\$\] " { }
+}
+
+#login handles cases:
+#   login with keys (no user/pass)
+#   user/pass
+#   login with keys (first time verification)
+expect {
+    -re ".*\[>#\$\] " { }
+    "assword: " {
+        send "$pass\r"
+        expect_prompt
+    }
+    "(yes/no)? " {
+        send "yes\r"
+        expect_prompt
+    }
+    default {
+        send_user "Login failed\n"
+        exit
+    }
+}
+
+# kill any previous instance
+send "pgrep -f 'python -m SimpleHTTPServer' | xargs -r kill\r"
+expect_prompt
+send "cd $pwd\r"
+expect_prompt
+send "python -m SimpleHTTPServer 8080 >/dev/null 2>&1\r"
+expect {
+    -timeout            -1
+    eof                 {}
+    inter               {}
+    -re ".*\[>#\$\] "   close
+}
+
