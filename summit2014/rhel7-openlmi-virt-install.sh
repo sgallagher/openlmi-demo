@@ -14,7 +14,7 @@ virt-install \
     --disk path=/var/lib/libvirt/images/rhel7-openlmi-2.img,size=0.1 \
     --disk path=/var/lib/libvirt/images/rhel7-openlmi-3.img,size=0.1 \
     --disk path=/var/lib/libvirt/images/rhel7-openlmi-4.img,size=0.1 \
-    -l http://qafiler.bos.redhat.com/redhat/nightly/RHEL-7.0-20140303.n.0/compose/Server/x86_64/os/ \
+    -l http://qafiler.bos.redhat.com/redhat/nightly/latest-RHEL-7/compose/Server/x86_64/os/ \
     --graphics none \
     -x "ks=https://raw.github.com/sgallagher/openlmi-demo/master/summit2014/rhel7-openlmi-virt-install.ks console=ttyS0"
 
