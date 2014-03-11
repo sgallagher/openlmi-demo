@@ -35,7 +35,7 @@ services --enabled=tog-pegasus,slpd,http
 selinux --permissive
 
 # Open CIMOM and SLP ports
-firewall --service=wbem-https --port=427:tcp,427:udp
+firewall --service=wbem-https,http --port=427:tcp,427:udp
 
 # Reboot automatically when install completes
 reboot
