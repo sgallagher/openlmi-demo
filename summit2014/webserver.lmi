@@ -44,6 +44,9 @@ def main(argv):
 
     options = parser.parse_args()
 
+    # For the purposes of the demo, skip SSL validation
+    options.verify = False
+
     print democolor.hilite("Establish OpenLMI communication to managed system.",
                            democolor.XTERM_YELLOW)
 
@@ -55,7 +58,8 @@ def main(argv):
                               democolor.XTERM_WHITE))
 
     # Use keypress to pause for demo operator to finish talking.
-    keypress(democolor.hilite("Install %s package onto the system using the OpenLMI Software Provider" % options.package,
+    keypress(democolor.hilite("Install %s package onto the system using \n"
+                              "the OpenLMI Software Provider" % options.package,
                               democolor.XTERM_YELLOW))
 
     # Install the 'httpd' package
@@ -77,7 +81,8 @@ def main(argv):
         stderr.write(democolor.hilite("Could not install package\n%s\n" % detail,
                                       democolor.XTERM_RED))
 
-    keypress(democolor.hilite("Configure the %s service to autostart using the OpenLMI Services Provider" % options.service,
+    keypress(democolor.hilite("Configure the %s service to autostart using \n"
+                              "the OpenLMI Services Provider" % options.service,
                               democolor.XTERM_YELLOW))
 
     # Enable the service to start at boot
@@ -91,7 +96,8 @@ def main(argv):
     keypress(democolor.hilite("%s will now start automatically at boot." % options.service,
                               democolor.XTERM_WHITE))
 
-    keypress(democolor.hilite("Start the %s service immediately using the OpenLMI Services Provider." % options.service,
+    keypress(democolor.hilite("Start the %s service immediately using \n"
+                              "the OpenLMI Services Provider." % options.service,
                               democolor.XTERM_YELLOW))
 
     # Start the webserver service
