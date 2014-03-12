@@ -31,8 +31,8 @@ def keypress(text):
 
 def main(argv):
     '''
-    This script will install the 'httpd' package, configure
-    it to start at boot and run the service immediately.
+    This script installs the 'httpd' package, configures
+    it to start at boot and runs the service immediately.
     '''
 
     print democolor.hilite(main.__doc__, democolor.XTERM_BOLD)
@@ -48,19 +48,19 @@ def main(argv):
     options.verify = False
 
     print democolor.hilite("Establish OpenLMI communication to managed system.",
-                           democolor.XTERM_YELLOW)
+                           democolor.XTERM_BLUE)
 
     # Connect to the remote (or local) OpenLMI managed system
     c = establish_connection(options)
     ns = c.root.cimv2
 
     keypress(democolor.hilite("Communication established.\n",
-                              democolor.XTERM_WHITE))
+                              democolor.XTERM_GREEN))
 
     # Use keypress to pause for demo operator to finish talking.
     keypress(democolor.hilite("Install %s package onto the system using \n"
                               "the OpenLMI Software Provider." % options.package,
-                              democolor.XTERM_YELLOW))
+                              democolor.XTERM_BLUE))
 
     # Install the 'httpd' package
     print(democolor.hilite("lmi.scripts.software.find_package(namespace, name='%s')" % options.package,
@@ -80,14 +80,14 @@ def main(argv):
                                           democolor.XTERM_RED))
             exit(2)
         keypress(democolor.hilite("Installed %s package.\n" % options.package,
-                                  democolor.XTERM_WHITE))
+                                  democolor.XTERM_GREEN))
     except Exception as detail:
         stderr.write(democolor.hilite("Could not install package\n%s\n" % detail,
                                       democolor.XTERM_RED))
 
     keypress(democolor.hilite("Configure the %s service to autostart using \n"
                               "the OpenLMI Services Provider." % options.service,
-                              democolor.XTERM_YELLOW))
+                              democolor.XTERM_BLUE))
 
     # Enable the service to start at boot
     try:
@@ -100,11 +100,11 @@ def main(argv):
         exit(3)
 
     keypress(democolor.hilite("%s will now start automatically at boot.\n" % options.service,
-                              democolor.XTERM_WHITE))
+                              democolor.XTERM_GREEN))
 
     keypress(democolor.hilite("Start the %s service immediately using \n"
                               "the OpenLMI Services Provider." % options.service,
-                              democolor.XTERM_YELLOW))
+                              democolor.XTERM_BLUE))
 
     # Start the webserver service
     try:
@@ -117,6 +117,6 @@ def main(argv):
         exit(4)
 
     print democolor.hilite("The %s service started successfully.\n" % options.service,
-                       democolor.XTERM_WHITE)
+                       democolor.XTERM_GREEN)
 
 main(argv)

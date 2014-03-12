@@ -39,8 +39,8 @@ def establish_connection(options):
         else:
             passwd = options.password
 
-        print(democolor.hilite("lmi.shell.LMIConnection.connect('%s', '%s', '%s')" % (
-                                   hostname, user, passwd),
+        print(democolor.hilite("lmi.shell.LMIConnection.connect('%s', '%s', 'XXXXXX')" % (
+                                   hostname, user),
                                democolor.XTERM_MAGENTA))
         c = connect(host_uri, user, passwd,
                     verify_server_cert=options.verify)
