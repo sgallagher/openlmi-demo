@@ -1,7 +1,7 @@
 basearch        := x86_64
-COMPOSEURL      ?= http://download.eng.brq.redhat.com/pub/rhel/nightly/latest-RHEL-7/compose/Server/$(basearch)/os/
+COMPOSEURL      ?= http://download.lab.bos.redhat.com/nightly/latest-RHEL-7/compose/Server/$(basearch)/os/
 KICKSTART       ?= stgnet.ks
-LOCATION        ?= /mnt/globalsync/rhel/nightly/latest-RHEL-7/compose/Server/x86_64/os/
+LOCATION        ?= ${COMPOSEURL}
 TESTHOSTNAME    ?= openlmi-stgnet-demo.example.com
 GUESTNAME       := $(shell echo $(TESTHOSTNAME) | sed 's/\([^.]\+\).*/\1/')
 

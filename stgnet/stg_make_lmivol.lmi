@@ -31,13 +31,12 @@ import docopt
 import pywbem
 import re
 import sys
-try:
-    from demoutils import democolor
-except ImportError:
-    # PYTHONPATH does not contain parent directory
-    sys.path.insert(0, '..')
-    from demoutils import democolor
-from scripton.lmi_storage_view import LMIStorageView
+
+# PYTHONPATH does not contain parent directory
+sys.path.insert(0, '../summit2014')
+
+from lmidemo.util import democolor
+from lmidemo.util.lmi_storage_view import LMIStorageView
 
 #: Regular expression for <host> argument.
 RE_HOST = re.compile(

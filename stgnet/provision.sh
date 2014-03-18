@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # specify a path to some rhel7 bootable image
-LOCATION==${LOCATION:-/mnt/globalsync/rhel/nightly/latest-RHEL-7/compose/Server/x86_64/os/}
+LOCATION=${LOCATION:-http://download.lab.bos.redhat.com/nightly/latest-RHEL-7/compose/Server/x86_64/os/}
 QEMU="${QEMU:-qemu:///system}"
-SYSTEMDISK=${SYSTEMDISK:-/var/tmp/openlmi-demo-system.img,size=5}
-TESTDISKS=${TESTDISKS:-/var/tmp/openlmi-demo-test%d.img,size=1}
-MAINNETWORK=${MAINNETWORK:-virbr0}
+SYSTEMDISK=${SYSTEMDISK:-/var/lib/libvirt/openlmi-demo-system.img,size=5}
+TESTDISKS=${TESTDISKS:-/var/lib/libvirt/images/openlmi-demo-test%d.img,size=1}
+MAINNETWORK=${MAINNETWORK:-default}
 TESTNETWORK=${TESTNETWORK:-test}
 TESTNETWORKIP=${TESTNETWORKIP:-192.168.122.1}
 GUESTNAME=${GUESTNAME:-openlmi-stgnet-demo}
@@ -29,7 +29,7 @@ function install_test_network() {
     cat >$testnetcfg <<-EOF
 	<network>
 	  <name>$TESTNETWORK</name>
-	  <bridge name='virbr1' stp='on' delay='0' />
+	  <bridge name='virbr-$TESTNETWORK' stp='on' delay='0' />
 	  <mac address='52:54:00:BF:CC:48'/>
 	  <ip address='${TESTNETWORKIP}' netmask='255.255.255.0'>
 	    <dhcp>
@@ -46,16 +46,6 @@ function install_test_network() {
 }
 
 [ -e local.cfg ] && . local.cfg
-
-if ! [[ -e "${LOCATION}" ]]; then
-    echo "Location '$LOCATION' does not exist!" >&2
-    exit 1
-elif [[ -f "${LOCATION}" ]]; then
-    isodir=`mktemp -d`
-    echo "Mounting iso $isodir"
-    mount -o loop "${LOCATION}" $isodir || exit 1
-    LOCATION=$isodir
-fi
 
 test_disk_opts=''
 for i in `seq 4`; do

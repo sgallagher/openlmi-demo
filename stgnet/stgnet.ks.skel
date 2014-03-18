@@ -36,6 +36,8 @@ firewall --service=wbem-https --port=8080:tcp
 services --enabled=tog-pegasus
 user --name=pegasus
 
+reboot
+
 %packages
 @core
 mc
@@ -66,30 +68,8 @@ enabled=1
 gpgcheck=0
 EOF
 
-# reconfigure Pegasus certificate with updated hostname
-hostname @@TESTHOSTNAME@@
-echo @@TESTHOSTNAME@@ >/etc/hostname
-cat >/etc/sysconfig/network <<EOF
-HOSTNAME=@@TESTHOSTNAME@@
-NETWORKING=yes
-EOF
-sed -i 's,\(127\.0\.0\.1\|::1\)\s\+.*,\0 @@TESTHOSTNAME@@,' \
-    /etc/hosts
-# Regenerate certificate with our hostname. Inspired by
-# /usr/share/Pegasus/scripts/genOpenPegasusSSLCerts script.
-pushd /etc/Pegasus
-sed -i 's,\(^CN\s*=\s*\).*,\1@@TESTHOSTNAME@@,' ssl.cnf \
-    2>>/var/lib/Pegasus/log/install.log
-/usr/bin/openssl req -x509 -days 3650 -newkey rsa:2048 \
-         -nodes -config ssl.cnf \
-         -keyout file.pem \
-         -out server.pem 2>>/var/lib/Pegasus/log/install.log
-chmod 400 file.pem
-chmod 444 server.pem
-popd #/etc/Pegasus
+# Enable local hostname lookups
+/usr/bin/sed -ie "s/hosts:[[:space:]]*files dns/hosts: files dns myhostname/" /etc/nsswitch.conf
+
 %end
 
-# this does not work - installation hangs with cpu usage at 100%
-#shutdown
-# this way installation stops and waits for user input (ENTER)
-# after that it hangs again, but it works fain after reboot

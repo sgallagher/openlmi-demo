@@ -5,7 +5,7 @@ Created on May 23, 2013
 '''
 
 import sys
-import summit2014.lmidemo.util.democolor as democolor
+import lmidemo.util.democolor as democolor
 
 class LMIStorageView:
     '''
