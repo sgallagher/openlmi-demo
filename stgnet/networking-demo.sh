@@ -119,11 +119,9 @@ pause
 # shutdown eth2.
 
 (set -x; lmi -h $URI net deactivate "$BOND Slave 2" eth2)
-(set -x; lmi -h $URI net device list)
-
-pause
-
 sleep 1 # let the change settle down
+(set -x; lmi -h $URI net device list)
+pause
 
 # GET the same file again. Bond has still one interface active - it should
 # work.
@@ -132,15 +130,13 @@ pause
 
 # Now shutdown the other interface.
 (set -x; lmi -h $URI net deactivate "$BOND Slave 1" eth1)
+sleep 1 # let the change settle down
 (set -x; lmi -h $URI net device list)
 pause
-
-sleep 1 # let the change settle down
 
 # GET the same file again. This will timeout after 5 seconds.
 (set -x; curl -m 5 -G $BONDIP:8080/etc/system-release || true)
 # Bond simply can not work with all of its slaves down.
-
 pause
 
 # Reenable one interface and try again.
