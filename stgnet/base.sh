@@ -28,7 +28,7 @@ function title() {
             shift;
             setx=0;
         fi
-        printf "\n%s== %s ==%s\n" `tput setaf 6` "$1" `tput sgr0`;
+        printf "\n%s== %s ==%s\n" `tput setaf 4` "$1" `tput sgr0`;
         if [[ "${setx:-1}" == 1 ]]; then
             unset setx
         fi
