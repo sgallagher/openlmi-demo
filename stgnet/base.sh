@@ -24,7 +24,6 @@ function title() {
     # By default it turns on commands echo. If you want to prevent it,
     # prepend your message with +x argument.
     {
-        set +x;
         if [[ "$1" == "+x" ]]; then
             shift;
             setx=0;
@@ -32,9 +31,14 @@ function title() {
         printf "\n%s== %s ==%s\n" `tput setaf 6` "$1" `tput sgr0`;
         if [[ "${setx:-1}" == 1 ]]; then
             unset setx
-            set -x;
         fi
     } 2>/dev/null
+}
+
+set -T
+
+function pause() {
+    read -n1 -s
 }
 
 # Terminate if something fails.
