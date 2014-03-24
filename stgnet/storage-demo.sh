@@ -16,8 +16,6 @@ if [[ "$1" =~ ^(-m|--meta-command)$ ]]; then
 fi
 . base.sh
 
-set -x      # echo commands
-
 # Following devices are available on remote host
 # /dev/vda     MS-DOS partition table
 # ├─/dev/vda1  ext3
@@ -32,10 +30,12 @@ set -x      # echo commands
 title "Inspecting storage."
 # *****************************************************************************
 # Let's check out, what informations can we get about /dev/vda
-lmi -h $URI storage show vda
+(set -x; lmi -h $URI storage show vda)
+pause
 
 # Command operates on partitions as well:
-lmi -h $URI storage show vda1
+(set -x; lmi -h $URI storage show vda1)
+pause
 
 # There are various ways of specifying device. It's all described in
 # the help of storage command:
@@ -61,10 +61,10 @@ lmi -h $URI storage show vda1
 #lmi -h $URI storage show /dev/vda
 
 # To get a similar tree listing as in the first comment, use tree command:
-lmi -H -h $URI storage tree
+(set -x; lmi -H -h $URI storage tree)
+pause
 # '-H' option turns on human readable output which adds units to volume sizes.
 
-{ set +x; } 2>/dev/null	    # suppress echo for next condition
 if [[ ${USE_LMISHELL:-1} = 1 ]];
 then    # Let's switch to LMIShell.
 
@@ -87,26 +87,31 @@ else    # The same can be achieved with LMI Meta-command.
 
     # We have four unpartitioned disks we can freely use. Let's create RAID 5
     # called "microraid" on three of them:
-    lmi -h $URI storage raid create --name microraid 5 vdb vdc vdd
+    (set -x; lmi -h $URI storage raid create --name microraid 5 vdb vdc vdd)
+    pause
 
     # Let's check the storage tree again:
-    lmi -H -h $URI storage tree
+    (set -x; lmi -H -h $URI storage tree)
+    pause
 
     # Let's get more details about the raid:
-    lmi -H -h $URI storage show microraid
+    (set -x; lmi -H -h $URI storage show microraid)
+    pause
 
     # *************************************************************************
     title "Creating volume group \"lmivg\"."
     # *************************************************************************
     # And make it into LVM physical volume together with the last physical
     # device. Let's name it "lmivg".
-    lmi -h $URI storage vg create lmivg microraid vde
+    (set -x; lmi -h $URI storage vg create lmivg microraid vde)
+    pause
 
     # *************************************************************************
     title "Creating logical volume \"lmivol\"."
     # *************************************************************************
     # Empty volume group is not much useful:
-    lmi -h $URI storage lv create lmivg lmivol 1G
+    (set -x; lmi -h $URI storage lv create lmivg lmivol 1G)
+    pause
     # This creates logical volumne "lmivol" in "lmivg" volume group !G large.
     # Storage sizes specification is quite flexible. Check the help of
     # `storage lv` command where you can find:
@@ -122,24 +127,35 @@ else    # The same can be achieved with LMI Meta-command.
     #                extents, '100e' means 100 extents.
 
     # Let's see what we've just created
-    lmi -H -h $URI storage vg list
-    lmi -H -h $URI storage vg show lmivg
-    lmi -H -h $URI storage lv show lmivol
+    (set -x; lmi -H -h $URI storage vg list)
+    pause
+
+    (set -x; lmi -H -h $URI storage vg show lmivg)
+    pause
+
+    (set -x; lmi -H -h $URI storage lv show lmivol)
+    pause
 
     # *************************************************************************
     title "Formatting volume \"lmivol\" as xfs."
     # *************************************************************************
     # Still it's not usable without a proper file system:
-    lmi -H -h $URI storage fs create --label lmixfs xfs lmivol
+    (set -x; lmi -H -h $URI storage fs create --label lmixfs xfs lmivol)
+    pause
+
     # This will format our "lmivol" volume with xfs. That's just one out of
     # plenty supported. For complete list, check the output of:
     #lmi -h $URI storage fs list-supported
 
     # Now the tree view will be more interesting:
-    lmi -H -h $URI storage tree
+    (set -x; lmi -H -h $URI storage tree)
+    pause
+
 
     # In complex setups you may be interested just in a subtree:
-    lmi -H -h $URI storage tree microraid
+    (set -x;  lmi -H -h $URI storage tree microraid)
+    pause
+
 
 fi
 
@@ -148,16 +164,15 @@ title "Mounting filesystem \"lmivol\"."
 # *****************************************************************************
 # Finally let's mount it. There are two steps involed. First is making the
 # mount point (with a check for existence)
-{ set +x; } 2>/dev/null	    # suppress echo
 if ! lmi -h $URI file show /mnt/lmivol 2>/dev/null; then
-    { set -x; } 2>/dev/null     # reenable echo
-    lmi -h $URI file createdir /mnt/lmivol
+    (set -x; lmi -h $URI file createdir /mnt/lmivol)
+    pause
 fi
-{ set -x; } 2>/dev/null     # reenable echo
 
 # Second is the mount command:
-lmi -h $URI storage mount create /dev/mapper/lmivg-lmivol /mnt/lmivol
+(set -x; lmi -h $URI storage mount create /dev/mapper/lmivg-lmivol /mnt/lmivol)
+pause
 
 # If you don't believe the exit code of the last command, you can always
 # check it:
-lmi -h $URI storage mount show /dev/mapper/lmivg-lmivol
+(set -x; lmi -h $URI storage mount show /dev/mapper/lmivg-lmivol)
