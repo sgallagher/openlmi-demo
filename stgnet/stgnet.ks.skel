@@ -3,7 +3,7 @@
 auth --enableshadow --passalgo=sha512
 
 # Use network installation
-url --url="@@COMPOSEURL@@"
+# url --url="@@COMPOSEURL@@"
 # Run the Setup Agent on first boot
 firstboot --enable
 ignoredisk --only-use=vda
