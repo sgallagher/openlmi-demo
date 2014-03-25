@@ -30,9 +30,9 @@ def keypress(text):
     raw_input(text)
 
 def main(argv):
-'''
+    '''
 This script installs the 'httpd' package, configures it to start at boot and runs the service immediately.
-'''
+    '''
 
     print democolor.hilite(main.__doc__, democolor.XTERM_BOLD)
 
