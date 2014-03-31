@@ -19,7 +19,7 @@
 
 BOND='LMI Bond'
 # Static address to assign to created bond interface.
-BONDIP=${BONDIP:-192.168.122.80}
+BONDIP=${BONDIP:-192.168.222.80}
 # Name of bond interface assigned by provider.
 BONDIFACE=bond0
 

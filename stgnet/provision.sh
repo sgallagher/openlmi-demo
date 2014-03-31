@@ -7,7 +7,7 @@ SYSTEMDISK=${SYSTEMDISK:-/var/lib/libvirt/openlmi-demo-system.img,size=5}
 TESTDISKS=${TESTDISKS:-/var/lib/libvirt/images/openlmi-demo-test%d.img,size=1}
 MAINNETWORK=${MAINNETWORK:-default}
 TESTNETWORK=${TESTNETWORK:-test}
-TESTNETWORKIP=${TESTNETWORKIP:-192.168.122.1}
+TESTNETWORKIP=${TESTNETWORKIP:-192.168.222.1}
 GUESTNAME=${GUESTNAME:-openlmi-stgnet-demo}
 KICKSTART=${KICKSTART:-stgnet.ks}
 

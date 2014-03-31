@@ -69,8 +69,8 @@ Useful environment variables:
                     Defaults to virbr0.
     TESTNETWORKIP - IPv4 address used for testing interfaces in guest. Prefix
                     needs to be different from prefix of MAINNETWORK. Mask \24
-                    is assumed. It defaults to 192.168.122.1. Therefor IP range
-                    192.168.122.* will be used for testing interfaces.
+                    is assumed. It defaults to 192.168.222.1. Therefor IP range
+                    192.168.222.* will be used for testing interfaces.
     KICKSTART     - Your custom kickstart file. Defaults to stgnet.ks which is
                     created by makefile from stgnet.ks.skel template.
 
